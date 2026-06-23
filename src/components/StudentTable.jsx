@@ -1,16 +1,16 @@
-import { IconTrash, IconBookOpen } from './Icons.jsx';
+import { IconTrash, IconSearch, IconBook } from './Icons.jsx';
 
 function getGrade(marks) {
-  if (marks >= 90) return { code: 'O', cls: 'grade-o' };
-  if (marks >= 75) return { code: 'A', cls: 'grade-a' };
-  if (marks >= 60) return { code: 'B', cls: 'grade-b' };
-  if (marks >= 50) return { code: 'C', cls: 'grade-c' };
-  if (marks >= 35) return { code: 'D', cls: 'grade-d' };
-  return            { code: 'F', cls: 'grade-f' };
+  if (marks >= 90) return { code: 'O', cls: 'g-O' };
+  if (marks >= 75) return { code: 'A', cls: 'g-A' };
+  if (marks >= 60) return { code: 'B', cls: 'g-B' };
+  if (marks >= 50) return { code: 'C', cls: 'g-C' };
+  if (marks >= 35) return { code: 'D', cls: 'g-D' };
+  return            { code: 'F', cls: 'g-F' };
 }
 
 function getInitials(name) {
-  return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  return name.split(' ').slice(0, 2).map(w => w[0] || '').join('').toUpperCase();
 }
 
 export default function StudentTable({ students, allStudents, onDeleteRequest, searchTerm, onSearchChange, sortBy, onSortChange }) {
@@ -19,30 +19,27 @@ export default function StudentTable({ students, allStudents, onDeleteRequest, s
   return (
     <section>
 
-      {/* Header */}
+      {/* Section header */}
       <div className="section-header">
         <h2 className="section-title">Student Records</h2>
         <span className="section-count">
-          {students.length} {isFiltered ? `of ${allStudents.length}` : ''} records
+          {students.length}{isFiltered ? ` of ${allStudents.length}` : ''} records
         </span>
       </div>
 
       {/* Search & Sort */}
       <div className="list-controls">
-        <div className="search-input-wrapper">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
+        <div className="search-wrap">
+          <IconSearch />
           <input
             type="search"
             className="search-input"
             placeholder="Search by name or roll no…"
             value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={e => onSearchChange(e.target.value)}
           />
         </div>
-
-        <select className="sort-select" value={sortBy} onChange={(e) => onSortChange(e.target.value)}>
+        <select className="sort-select" value={sortBy} onChange={e => onSortChange(e.target.value)}>
           <option value="date-desc">Newest First</option>
           <option value="date-asc">Oldest First</option>
           <option value="marks-desc">Marks: High → Low</option>
@@ -53,7 +50,7 @@ export default function StudentTable({ students, allStudents, onDeleteRequest, s
       </div>
 
       {/* Table */}
-      <div className="table-wrapper">
+      <div className="table-wrap">
         <table className="table">
           <thead>
             <tr>
@@ -62,23 +59,17 @@ export default function StudentTable({ students, allStudents, onDeleteRequest, s
               <th>Student Name</th>
               <th>Marks</th>
               <th>Grade</th>
-              <th style={{ width: 56 }}></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {students.length === 0 ? (
               <tr>
                 <td colSpan={6}>
-                  <div className="empty-state">
-                    <div className="empty-state__icon"><IconBookOpen /></div>
-                    <p className="empty-state__title">
-                      {isFiltered ? 'No matches found' : 'No students enrolled yet'}
-                    </p>
-                    <p className="empty-state__text">
-                      {isFiltered
-                        ? 'Try a different search term.'
-                        : 'Use the form to add your first student.'}
-                    </p>
+                  <div className="empty">
+                    <div className="empty-icon"><IconBook /></div>
+                    <h3>{isFiltered ? 'No matches found' : 'No students enrolled yet'}</h3>
+                    <p>{isFiltered ? 'Try a different search term.' : 'Use the form to add your first student.'}</p>
                   </div>
                 </td>
               </tr>
@@ -87,27 +78,25 @@ export default function StudentTable({ students, allStudents, onDeleteRequest, s
                 const grade = getGrade(student.marks);
                 return (
                   <tr key={student.id}>
-                    <td style={{ color: 'var(--color-text-light)', fontSize: '0.8rem', fontWeight: 600 }}>
+                    <td style={{ color: 'var(--light)', fontSize: '0.8rem', fontWeight: 600 }}>
                       {String(i + 1).padStart(2, '0')}
                     </td>
-                    <td><span className="table-roll">{student.rollNo}</span></td>
+                    <td><span className="roll-no">{student.rollNo}</span></td>
                     <td>
-                      <div className="table-name-cell">
-                        <div className="table-avatar">{getInitials(student.name)}</div>
-                        <span className="table-name-text">{student.name}</span>
+                      <div className="name-cell">
+                        <div className="avatar">{getInitials(student.name)}</div>
+                        <span className="name-text">{student.name}</span>
                       </div>
                     </td>
                     <td>
-                      <div className="marks-pill">
-                        <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem' }}>{student.marks}</span>
+                      <div className="marks-cell">
+                        {student.marks}
                         <div className="marks-bar">
-                          <div className="marks-bar-fill" style={{ width: `${student.marks}%` }} />
+                          <div className="marks-fill" style={{ width: `${student.marks}%` }} />
                         </div>
                       </div>
                     </td>
-                    <td>
-                      <span className={`marks-grade ${grade.cls}`}>{grade.code}</span>
-                    </td>
+                    <td><span className={`grade-badge ${grade.cls}`}>{grade.code}</span></td>
                     <td>
                       <button className="btn btn-icon" onClick={() => onDeleteRequest(student)} title={`Delete ${student.name}`}>
                         <IconTrash />
@@ -120,6 +109,7 @@ export default function StudentTable({ students, allStudents, onDeleteRequest, s
           </tbody>
         </table>
       </div>
+
     </section>
   );
 }

@@ -1,5 +1,6 @@
-import { IconUsersGroup, IconTrendUp, IconAward } from './Icons.jsx';
+import { IconUsers, IconTrend, IconAward } from './Icons.jsx';
 
+// Get grade letter from marks
 function getGrade(marks) {
   if (marks >= 90) return 'O';
   if (marks >= 75) return 'A';
@@ -9,64 +10,41 @@ function getGrade(marks) {
   return 'F';
 }
 
-function getGradeClass(grade) {
-  const map = { O: 'grade-o', A: 'grade-a', B: 'grade-b', C: 'grade-c', D: 'grade-d', F: 'grade-f' };
-  return map[grade] || '';
-}
-
 export default function StatsBar({ students }) {
-  const total = students.length;
-
-  const avg = total > 0
-    ? Math.round(students.reduce((sum, s) => sum + Number(s.marks), 0) / total)
-    : 0;
-
-  const toppers = students.filter(s => Number(s.marks) >= 75).length;
-
-  const avgGrade = getGrade(avg);
+  const total   = students.length;
+  const avg     = total > 0 ? Math.round(students.reduce((sum, s) => sum + s.marks, 0) / total) : 0;
+  const toppers = students.filter(s => s.marks >= 75).length;
 
   return (
-    <div className="stats-bar" role="region" aria-label="Summary statistics">
+    <div className="stats-bar">
 
-      {/* Total Students */}
-      <article className="stat-card">
-        <div className="stat-card__icon-row" aria-hidden="true" style={{ color: 'var(--color-primary-dark)', marginBottom: 6 }}>
-          <IconUsersGroup />
-        </div>
-        <div className="stat-card__value">{total}</div>
-        <div className="stat-card__label">Total Students</div>
-        <div className="stat-card__sub">{total === 0 ? 'None yet' : total === 1 ? '1 record' : `${total} records`}</div>
-      </article>
+      <div className="stat-card">
+        <div className="stat-icon"><IconUsers /></div>
+        <div className="stat-value">{total}</div>
+        <div className="stat-label">Total Students</div>
+        <div className="stat-sub">{total === 0 ? 'None yet' : `${total} record${total > 1 ? 's' : ''}`}</div>
+      </div>
 
-      {/* Average Marks */}
-      <article className="stat-card">
-        <div className="stat-card__icon-row" aria-hidden="true" style={{ color: 'var(--color-cta)', marginBottom: 6 }}>
-          <IconTrendUp />
-        </div>
-        <div className="stat-card__value">
-          {total > 0 ? avg : '—'}
+      <div className="stat-card">
+        <div className="stat-icon" style={{ color: 'var(--gold)' }}><IconTrend /></div>
+        <div className="stat-value">
+          {avg}
           {total > 0 && (
-            <span
-              className={`marks-grade ${getGradeClass(avgGrade)}`}
-              style={{ marginLeft: 6, fontSize: '0.6rem', verticalAlign: 'middle' }}
-            >
-              {avgGrade}
+            <span className={`grade-badge g-${getGrade(avg)}`} style={{ marginLeft: 6, fontSize: '0.6rem', verticalAlign: 'middle' }}>
+              {getGrade(avg)}
             </span>
           )}
         </div>
-        <div className="stat-card__label">Class Average</div>
-        <div className="stat-card__sub">{total > 0 ? 'out of 100 marks' : 'No data yet'}</div>
-      </article>
+        <div className="stat-label">Class Average</div>
+        <div className="stat-sub">{total > 0 ? 'out of 100' : 'No data yet'}</div>
+      </div>
 
-      {/* Top Performers */}
-      <article className="stat-card">
-        <div className="stat-card__icon-row" aria-hidden="true" style={{ color: 'var(--color-secondary)', marginBottom: 6 }}>
-          <IconAward />
-        </div>
-        <div className="stat-card__value">{toppers}</div>
-        <div className="stat-card__label">Top Performers</div>
-        <div className="stat-card__sub">scored 75 &amp; above</div>
-      </article>
+      <div className="stat-card">
+        <div className="stat-icon" style={{ color: 'var(--green)' }}><IconAward /></div>
+        <div className="stat-value">{toppers}</div>
+        <div className="stat-label">Top Performers</div>
+        <div className="stat-sub">scored 75 &amp; above</div>
+      </div>
 
     </div>
   );

@@ -1,8 +1,7 @@
 export default function Footer() {
-  const year = new Date().getFullYear();
   return (
-    <footer className="footer" role="contentinfo">
-      &copy; {year} ScholarHub &mdash; Academic Records Portal. Built with React &amp; Vite.
+    <footer className="footer">
+      &copy; {new Date().getFullYear()} ScholarHub — Academic Records Portal. Built with React &amp; Vite.
     </footer>
   );
 }
